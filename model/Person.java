@@ -1,7 +1,12 @@
 package model;
 
-public class Person {
-	private static int count = 0;
+import java.io.Serializable;
+
+public class Person implements Serializable{
+
+	private static final long serialVersionUID = 10L;
+
+	public static int count = 0;
 	
 	private int id;
 	
@@ -90,8 +95,5 @@ public class Person {
 	public void setGender(Gender gender) {
 		this.gender = gender;
 	}
-	
-	
-	
 	
 }

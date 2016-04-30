@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.*;
 
@@ -15,7 +17,7 @@ public class MainFrame extends JFrame {
 	private ToolBar toolBar;
 	private FormPanel formPanel;
 	private TablePanel tablePanel;
-	private JFileChooser fileChooser;
+	private SafeFileChooser fileChooser;
 	private Controller controller;
 
 	public MainFrame() {
@@ -25,8 +27,8 @@ public class MainFrame extends JFrame {
 		toolBar = new ToolBar();
 		formPanel = new FormPanel();
 		tablePanel = new TablePanel();
-		fileChooser = new JFileChooser();
-		
+		fileChooser = new SafeFileChooser();
+
 		fileChooser.setFileFilter(new PersonFileFilter());
 
 		setJMenuBar(createMenu());
@@ -43,10 +45,10 @@ public class MainFrame extends JFrame {
 				tablePanel.refresh();
 			}
 		});
-		
+
 		tablePanel.setDatabase(controller.getDatabase());
 
-		add(toolBar, BorderLayout.NORTH);
+		// add(toolBar, BorderLayout.NORTH);
 		add(tablePanel, BorderLayout.CENTER);
 		add(formPanel, BorderLayout.WEST);
 
@@ -61,9 +63,12 @@ public class MainFrame extends JFrame {
 		JMenu fileMenu = new JMenu("File");
 		JMenuItem exportDataItem = new JMenuItem("Export Data ...");
 		JMenuItem importDataItem = new JMenuItem("Import Data ...");
+		JMenuItem clearDataItem = new JMenuItem("Clear");
 		JMenuItem quitItem = new JMenuItem("Quit");
 		fileMenu.add(importDataItem);
 		fileMenu.add(exportDataItem);
+		fileMenu.addSeparator();
+		fileMenu.add(clearDataItem);
 		fileMenu.addSeparator();
 		fileMenu.add(quitItem);
 
@@ -79,26 +84,44 @@ public class MainFrame extends JFrame {
 		// Set up File Menu
 		importDataItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (fileChooser.showOpenDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION)
-					System.out.println(fileChooser.getSelectedFile());
+				loadFromFile();
 			}
 		});
-		
+
 		exportDataItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION)
-					System.out.println(fileChooser.getSelectedFile());
+				saveTofile();
 			}
 		});
-		
+
+		clearDataItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int result = JOptionPane.showConfirmDialog(MainFrame.this, "Do you want to save before clear action?",
+						"Warning", JOptionPane.YES_NO_CANCEL_OPTION);
+				switch (result) {
+				case JOptionPane.YES_OPTION:
+					saveTofile();
+					return;
+				case JOptionPane.NO_OPTION:
+					controller.clear();
+					return;
+				case JOptionPane.CANCEL_OPTION:
+					return;
+				}
+
+			}
+		});
+
+		importDataItem.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
 		quitItem.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
 		quitItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int choice = JOptionPane.showConfirmDialog(MainFrame.this, 
-						"Do you really want to exit the app?", "Confirm Exit",
-						JOptionPane.OK_CANCEL_OPTION);
+				int choice = JOptionPane.showConfirmDialog(MainFrame.this, "Do you really want to exit the app?",
+						"Confirm Exit", JOptionPane.OK_CANCEL_OPTION);
 				if (choice == JOptionPane.OK_OPTION)
 					System.exit(0);
 			}
@@ -112,8 +135,30 @@ public class MainFrame extends JFrame {
 				formPanel.setVisible(menuItem.isSelected());
 			}
 		});
-		
 
 		return menuBar;
+	}
+
+	private void saveTofile() {
+		if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION)
+			try {
+				controller.saveToFile(fileChooser.getSelectedFile());
+			} catch (IOException e1) {
+				JOptionPane.showMessageDialog(MainFrame.this, "Failed to save data!", "Error",
+						JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			}
+	}
+
+	private void loadFromFile() {
+		if (fileChooser.showOpenDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION)
+			try {
+				controller.loadFromFile(fileChooser.getSelectedFile());
+				tablePanel.refresh();
+			} catch (IOException e1) {
+				JOptionPane.showMessageDialog(MainFrame.this, "Failed to load data!", "Error",
+						JOptionPane.ERROR_MESSAGE);
+				e1.printStackTrace();
+			}
 	}
 }

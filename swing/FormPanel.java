@@ -59,6 +59,9 @@ public class FormPanel extends JPanel implements ActionListener{
 				if (formListener != null){
 					formListener.FormEventOccured(ev);
 				}
+				
+				// Reset the form panel
+				resetFormPanel();
 			}
 		});
 		
@@ -284,6 +287,18 @@ public class FormPanel extends JPanel implements ActionListener{
 	
 	public void setFormListener(FormEventListener formListener){
 		this.formListener = formListener;
+	}
+	
+	private void resetFormPanel() {
+		nameField.setText("");
+		occupationField.setText("");
+		ageList.setSelectedIndex(1);
+		empCombo.setSelectedIndex(0);
+		citizenCheck.setSelected(false);
+		taxLabel.setEnabled(false);
+		taxId.setEnabled(false);
+		taxId.setText("");
+		maleRadio.setSelected(true);
 	}
 
 }

@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.*;
 import java.util.ArrayList;
 import model.*;
 import swing.*;
@@ -50,6 +51,18 @@ public class Controller {
 		Person person = new Person(name, occupation, age, employment, tax, isUkCitizen, gender);
 		
 		db.addPerson(person);
+	}
+	
+	public void saveToFile(File file) throws IOException{
+		db.saveToFile(file);
+	}
+	
+	public void loadFromFile(File file) throws IOException{
+		db.loadFromFile(file);
+	}
+
+	public void clear() {
+		db.clear();
 	}
 	
 }
