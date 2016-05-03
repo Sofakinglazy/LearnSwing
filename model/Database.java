@@ -1,22 +1,24 @@
 package model;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Database {
-	private ArrayList<Person> people;
+	private LinkedList<Person> people;
 	
 	public Database(){
-		people = new ArrayList<>();
+		people = new LinkedList<>();
 	}
 	
 	public void addPerson(Person person){
 		people.add(person);
 	}
 	
-	public ArrayList<Person> getPeople(){
-		return people;
+	public List<Person> getPeople(){
+		return Collections.unmodifiableList(people);
 	}
 	
 	public void saveToFile(File file) throws IOException {
@@ -49,5 +51,9 @@ public class Database {
 	public void clear() {
 		Person.count = 0;
 		people.removeAll(people);
+	}
+
+	public void removePersonAt(int index) {
+		people.remove(index);
 	}
 }

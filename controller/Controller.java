@@ -2,6 +2,9 @@ package controller;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import model.*;
 import swing.*;
 
@@ -12,7 +15,7 @@ public class Controller {
 		db = new Database();
 	}
 	
-	public ArrayList<Person> getDatabase(){
+	public List<Person> getDatabase(){
 		return db.getPeople();
 	}
 	
@@ -63,6 +66,10 @@ public class Controller {
 
 	public void clear() {
 		db.clear();
+	}
+
+	public void removePersonAt(int index) {
+		db.removePersonAt(index);
 	}
 	
 }

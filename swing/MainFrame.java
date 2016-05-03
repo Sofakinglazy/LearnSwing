@@ -18,6 +18,7 @@ public class MainFrame extends JFrame {
 	private FormPanel formPanel;
 	private TablePanel tablePanel;
 	private SafeFileChooser fileChooser;
+	private PresDialog presDialog;
 	private Controller controller;
 
 	public MainFrame() {
@@ -28,6 +29,7 @@ public class MainFrame extends JFrame {
 		formPanel = new FormPanel();
 		tablePanel = new TablePanel();
 		fileChooser = new SafeFileChooser();
+		presDialog = new PresDialog(this);
 
 		fileChooser.setFileFilter(new PersonFileFilter());
 
@@ -47,6 +49,12 @@ public class MainFrame extends JFrame {
 		});
 
 		tablePanel.setDatabase(controller.getDatabase());
+		
+		tablePanel.setPersonTableListener(new PersonTableListener(){
+			public void deleteRow(int row) {
+				controller.removePersonAt(row);
+			}
+		});
 
 		// add(toolBar, BorderLayout.NORTH);
 		add(tablePanel, BorderLayout.CENTER);
@@ -75,8 +83,10 @@ public class MainFrame extends JFrame {
 		JMenu windowMenu = new JMenu("Window");
 		JMenu showMenu = new JMenu("Show");
 		JMenuItem personFormCheckBox = new JCheckBoxMenuItem("Person Form");
+		JMenuItem presItem = new JMenuItem("Preferences...");
 		showMenu.add(personFormCheckBox);
 		windowMenu.add(showMenu);
+		windowMenu.add(presItem);
 
 		menuBar.add(fileMenu);
 		menuBar.add(windowMenu);
@@ -96,7 +106,7 @@ public class MainFrame extends JFrame {
 
 		clearDataItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int result = JOptionPane.showConfirmDialog(MainFrame.this, "Do you want to save before clear action?",
+				int result = JOptionPane.showConfirmDialog(MainFrame.this, "Do you want to save the file?",
 						"Warning", JOptionPane.YES_NO_CANCEL_OPTION);
 				switch (result) {
 				case JOptionPane.YES_OPTION:
@@ -133,6 +143,12 @@ public class MainFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem) e.getSource();
 				formPanel.setVisible(menuItem.isSelected());
+			}
+		});
+		
+		presItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				presDialog.setVisible(true);
 			}
 		});
 

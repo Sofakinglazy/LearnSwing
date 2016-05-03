@@ -1,16 +1,15 @@
 package swing;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
 
-import model.Age;
-import model.Employment;
-import model.Gender;
 import model.Person;
 
 public class PersonTableModel extends AbstractTableModel {
 
-	private ArrayList<Person> db;
+	private List<Person> db;
 
 	private String[] colNames = {"ID", "Name", "Occupation", "Age Category", "Employment", "UK Citizen", 
 			"Tax ID", "Gender"};
@@ -18,8 +17,8 @@ public class PersonTableModel extends AbstractTableModel {
 	public PersonTableModel() {
 	}
 
-	public void setDatabase(ArrayList<Person> database) {
-		db = database;
+	public void setDatabase(List<Person>list) {
+		db = list;
 	}
 
 	
