@@ -6,6 +6,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.NodeChangeListener;
+import java.util.prefs.PreferenceChangeListener;
+import java.util.prefs.Preferences;
 
 import javax.swing.*;
 
@@ -20,18 +25,11 @@ public class MainFrame extends JFrame {
 	private SafeFileChooser fileChooser;
 	private PresDialog presDialog;
 	private Controller controller;
+	private Preferences pres;
 
 	public MainFrame() {
 		super("Hello World");
-		controller = new Controller();
-		textPanel = new TextPanel();
-		toolBar = new ToolBar();
-		formPanel = new FormPanel();
-		tablePanel = new TablePanel();
-		fileChooser = new SafeFileChooser();
-		presDialog = new PresDialog(this);
-
-		fileChooser.setFileFilter(new PersonFileFilter());
+		initComponents();
 
 		setJMenuBar(createMenu());
 
@@ -49,12 +47,30 @@ public class MainFrame extends JFrame {
 		});
 
 		tablePanel.setDatabase(controller.getDatabase());
-		
-		tablePanel.setPersonTableListener(new PersonTableListener(){
+
+		tablePanel.setPersonTableListener(new PersonTableListener() {
 			public void deleteRow(int row) {
 				controller.removePersonAt(row);
 			}
 		});
+
+		presDialog.setPresListener(new PresListener() {
+			public void setPreferences(PresEvent pe) {
+				int port = pe.getPort();
+				String user = pe.getUser();
+				String password = pe.getPassword();
+
+				pres.putInt("port", port);
+				pres.put("user", user);
+				pres.put("password", password);
+			}
+		});
+
+		int port = pres.getInt("port", 3306);
+		String user = pres.get("user", "");
+		String password = pres.get("password", "");
+
+		presDialog.setDefault(port, user, password);
 
 		// add(toolBar, BorderLayout.NORTH);
 		add(tablePanel, BorderLayout.CENTER);
@@ -63,6 +79,19 @@ public class MainFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setMinimumSize(new Dimension(1200, 700));
 		setVisible(true);
+	}
+
+	private void initComponents() {
+		controller = new Controller();
+		textPanel = new TextPanel();
+		toolBar = new ToolBar();
+		formPanel = new FormPanel();
+		tablePanel = new TablePanel();
+		fileChooser = new SafeFileChooser();
+		presDialog = new PresDialog(this);
+		pres = Preferences.userRoot().node("db");
+
+		fileChooser.setFileFilter(new PersonFileFilter());
 	}
 
 	private JMenuBar createMenu() {
@@ -106,8 +135,8 @@ public class MainFrame extends JFrame {
 
 		clearDataItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int result = JOptionPane.showConfirmDialog(MainFrame.this, "Do you want to save the file?",
-						"Warning", JOptionPane.YES_NO_CANCEL_OPTION);
+				int result = JOptionPane.showConfirmDialog(MainFrame.this, "Do you want to save the file?", "Warning",
+						JOptionPane.YES_NO_CANCEL_OPTION);
 				switch (result) {
 				case JOptionPane.YES_OPTION:
 					saveTofile();
@@ -145,12 +174,15 @@ public class MainFrame extends JFrame {
 				formPanel.setVisible(menuItem.isSelected());
 			}
 		});
-		
+
 		presItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				presDialog.setVisible(true);
 			}
 		});
+
+		presItem.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
 		return menuBar;
 	}
