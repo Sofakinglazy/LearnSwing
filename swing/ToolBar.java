@@ -7,22 +7,22 @@ import javax.swing.border.EtchedBorder;
 
 public class ToolBar extends JPanel implements ActionListener{
 	
-	private JButton leftButton;
-	private JButton rightButton;
+	private JButton saveButton;
+	private JButton refreshButton;
 	
-	private StringListener stringListener;
+	private ToolbarListener toolbarListener;
 	
 	public ToolBar(){
-		leftButton = new JButton("Left");
-		rightButton = new JButton("Right");
+		saveButton = new JButton("Save");
+		refreshButton = new JButton("Refresh");
 		
-		leftButton.addActionListener(this);
-		rightButton.addActionListener(this);
+		saveButton.addActionListener(this);
+		refreshButton.addActionListener(this);
 		
 		setLayout(new FlowLayout(FlowLayout.LEADING));
 		
-		add(leftButton);
-		add(rightButton);
+		add(saveButton);
+		add(refreshButton);
 		
 		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
 	}
@@ -30,17 +30,17 @@ public class ToolBar extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton clicked = (JButton) e.getSource();
-		if (stringListener != null){
-			if (clicked == leftButton){
-				stringListener.textEmmited("Left!\n");
+		if (toolbarListener != null){
+			if (clicked == saveButton){
+				toolbarListener.saveEventOccurred();
 			}
-			else if (clicked == rightButton){
-				stringListener.textEmmited("Right!\n");
+			else if (clicked == refreshButton){
+				toolbarListener.refreshEventOccurred();
 			}
 		}
 	}
 	
-	public void setStringListener(StringListener stringListener) {
-		this.stringListener = stringListener;
+	public void setToolbarListener(ToolbarListener toolbarListener) {
+		this.toolbarListener = toolbarListener;
 	}
 }

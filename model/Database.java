@@ -53,7 +53,7 @@ public class Database {
 	}
 
 	public void clear() {
-		Person.count = 0;
+		Person.count = 1;
 		people.clear();
 	}
 
@@ -114,8 +114,6 @@ public class Database {
 			int count = checkResult.getInt(1);
 
 			if (count == 0) {
-				System.out.println("Insert person with ID " + id + " in database.");
-
 				int col = 1;
 				insertStmt.setInt(col++, id);
 				insertStmt.setString(col++, name);
@@ -128,8 +126,6 @@ public class Database {
 
 				insertStmt.executeUpdate();
 			} else {
-				System.out.println("Update person with ID " + id + " in database.");
-
 				int col = 1;
 				updateStmt.setString(col++, name);
 				updateStmt.setString(col++, age.name());
@@ -170,7 +166,6 @@ public class Database {
 			Person person = new Person(id, name, occupation, Age.valueOf(age), Employment.valueOf(emp), taxId, isUkCitizen, Gender.valueOf(gender));
 			addPerson(person);
 			
-			System.out.println(person);
 		}
 		
 		loadStmt.close();

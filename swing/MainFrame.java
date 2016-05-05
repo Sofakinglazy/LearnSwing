@@ -7,6 +7,8 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.NodeChangeListener;
 import java.util.prefs.PreferenceChangeListener;
@@ -15,6 +17,7 @@ import java.util.prefs.Preferences;
 import javax.swing.*;
 
 import controller.Controller;
+import model.Person;
 
 public class MainFrame extends JFrame {
 
@@ -28,14 +31,35 @@ public class MainFrame extends JFrame {
 	private Preferences pres;
 
 	public MainFrame() {
-		super("Hello World");
+		super("Population Record System");
 		initComponents();
 
 		setJMenuBar(createMenu());
 
-		toolBar.setStringListener(new StringListener() {
-			public void textEmmited(String text) {
-				textPanel.append(text);
+		toolBar.setToolbarListener(new ToolbarListener() {
+			public void saveEventOccurred() {
+				connectDatabase();
+				try {
+					controller.save();
+					JOptionPane.showMessageDialog(MainFrame.this, "Successfully save to database!", "Save",
+							JOptionPane.INFORMATION_MESSAGE);
+				} catch (SQLException e) {
+					JOptionPane.showMessageDialog(MainFrame.this, "Cannot save to database.",
+							"Database Connection Problem", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+
+			public void refreshEventOccurred() {
+				connectDatabase();
+				try {
+					if (!controller.getDatabase().isEmpty()) showSaveWarningDialog();
+					controller.load();
+				} catch (SQLException e) {
+					JOptionPane.showMessageDialog(MainFrame.this, "Cannot load from database.",
+							"Database Connection Problem", JOptionPane.ERROR_MESSAGE);
+				}
+
+				tablePanel.refresh();
 			}
 		});
 
@@ -72,7 +96,7 @@ public class MainFrame extends JFrame {
 
 		presDialog.setDefault(port, user, password);
 
-		// add(toolBar, BorderLayout.NORTH);
+		add(toolBar, BorderLayout.NORTH);
 		add(tablePanel, BorderLayout.CENTER);
 		add(formPanel, BorderLayout.WEST);
 
@@ -135,25 +159,14 @@ public class MainFrame extends JFrame {
 
 		clearDataItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int result = JOptionPane.showConfirmDialog(MainFrame.this, "Do you want to save the file?", "Warning",
-						JOptionPane.YES_NO_CANCEL_OPTION);
-				switch (result) {
-				case JOptionPane.YES_OPTION:
-					saveTofile();
-					return;
-				case JOptionPane.NO_OPTION:
-					controller.clear();
-					return;
-				case JOptionPane.CANCEL_OPTION:
-					return;
-				}
-
+				showSaveWarningDialog();
 			}
 		});
 
 		importDataItem.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-
+		exportDataItem.setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_E, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		quitItem.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
@@ -208,5 +221,29 @@ public class MainFrame extends JFrame {
 						JOptionPane.ERROR_MESSAGE);
 				e1.printStackTrace();
 			}
+	}
+
+	private void connectDatabase() {
+		try {
+			controller.connect();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(MainFrame.this, "Cannot connect to database.", "Connection Problem",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	private void showSaveWarningDialog(){
+		int result = JOptionPane.showConfirmDialog(MainFrame.this, "Do you want to save the file?", "Warning",
+				JOptionPane.YES_NO_CANCEL_OPTION);
+		switch (result) {
+		case JOptionPane.YES_OPTION:
+			saveTofile();
+			return;
+		case JOptionPane.NO_OPTION:
+			controller.clear();
+			return;
+		case JOptionPane.CANCEL_OPTION:
+			return;
+		}
 	}
 }

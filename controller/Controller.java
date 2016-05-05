@@ -71,6 +71,14 @@ public class Controller {
 		db.removePersonAt(index);
 	}
 	
+	public void connect() throws Exception{
+		db.connect();
+	}
+	
+	public void disconnect(){
+		db.disconnect();
+	}
+	
 	public void save() throws SQLException{
 		db.save();
 	}
