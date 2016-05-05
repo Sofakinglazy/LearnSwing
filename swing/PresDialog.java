@@ -65,7 +65,7 @@ public class PresDialog extends JDialog{
 		JPanel controlsPanel = new JPanel();
 		JPanel btnsPanel = new JPanel();
 		
-		Border titleBorder = BorderFactory.createTitledBorder("Database Paras");
+		Border titleBorder = BorderFactory.createTitledBorder("Database");
 		Border outsideBorder = BorderFactory.createEmptyBorder(5, 10, 0, 10);
 		controlsPanel.setBorder(BorderFactory.createCompoundBorder(outsideBorder, titleBorder));
 		

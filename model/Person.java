@@ -6,7 +6,7 @@ public class Person implements Serializable{
 
 	private static final long serialVersionUID = 10L;
 
-	public static int count = 0;
+	public static int count = 1;
 	
 	private int id;
 	
@@ -31,6 +31,14 @@ public class Person implements Serializable{
 		id = count;
 		count++;
 	}
+	
+	public Person(int id, String name, String occupation, Age age, Employment emp, String taxId, boolean ukCitizen,
+			Gender gender) {
+		this(name, occupation, age, emp, taxId, ukCitizen, gender);
+		this.id = id;
+	}
+
+
 
 	public int getId() {
 		return id;
@@ -94,6 +102,10 @@ public class Person implements Serializable{
 
 	public void setGender(Gender gender) {
 		this.gender = gender;
+	}
+	
+	public String toString(){
+		return id + ": " + name; 
 	}
 	
 }

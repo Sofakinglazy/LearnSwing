@@ -1,8 +1,7 @@
 package controller;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.sql.SQLException;
 import java.util.List;
 
 import model.*;
@@ -70,6 +69,14 @@ public class Controller {
 
 	public void removePersonAt(int index) {
 		db.removePersonAt(index);
+	}
+	
+	public void save() throws SQLException{
+		db.save();
+	}
+	
+	public void load() throws SQLException{
+		db.load();
 	}
 	
 }
