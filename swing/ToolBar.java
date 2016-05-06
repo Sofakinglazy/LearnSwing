@@ -2,10 +2,12 @@ package swing;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.net.URL;
+
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 
-public class ToolBar extends JPanel implements ActionListener{
+public class ToolBar extends JToolBar implements ActionListener{
 	
 	private JButton saveButton;
 	private JButton refreshButton;
@@ -13,13 +15,14 @@ public class ToolBar extends JPanel implements ActionListener{
 	private ToolbarListener toolbarListener;
 	
 	public ToolBar(){
-		saveButton = new JButton("Save");
-		refreshButton = new JButton("Refresh");
+		saveButton = new JButton(IconUtils.getGeneralIcon("Save", 16));
+		refreshButton = new JButton(IconUtils.getGeneralIcon("Refresh", 16));
+		
+		saveButton.setToolTipText("Save");
+		refreshButton.setToolTipText("Refresh");
 		
 		saveButton.addActionListener(this);
 		refreshButton.addActionListener(this);
-		
-		setLayout(new FlowLayout(FlowLayout.LEADING));
 		
 		add(saveButton);
 		add(refreshButton);

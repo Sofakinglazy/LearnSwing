@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -96,13 +99,24 @@ public class MainFrame extends JFrame {
 
 		presDialog.setDefault(port, user, password);
 
-		add(toolBar, BorderLayout.NORTH);
+		add(toolBar, BorderLayout.PAGE_START);
 		add(tablePanel, BorderLayout.CENTER);
 		add(formPanel, BorderLayout.WEST);
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setWindowlistener();
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setMinimumSize(new Dimension(1200, 700));
 		setVisible(true);
+	}
+
+	private void setWindowlistener() {
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				controller.disconnect();
+				dispose();
+				System.gc();
+			}
+		});
 	}
 
 	private void initComponents() {
@@ -168,14 +182,18 @@ public class MainFrame extends JFrame {
 		exportDataItem.setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_E, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		quitItem.setAccelerator(
-				KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+				KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
 		quitItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int choice = JOptionPane.showConfirmDialog(MainFrame.this, "Do you really want to exit the app?",
 						"Confirm Exit", JOptionPane.OK_CANCEL_OPTION);
-				if (choice == JOptionPane.OK_OPTION)
-					System.exit(0);
+				if (choice == JOptionPane.OK_OPTION){
+					WindowListener[] listeners = getWindowListeners();
+					for (WindowListener listener : listeners)
+						listener.windowClosing(new WindowEvent(MainFrame.this, 0));
+				}
+					
 			}
 		});
 
