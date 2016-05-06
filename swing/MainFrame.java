@@ -28,6 +28,9 @@ public class MainFrame extends JFrame {
 	private ToolBar toolBar;
 	private FormPanel formPanel;
 	private TablePanel tablePanel;
+	private JSplitPane splitPanel;
+	private JTabbedPane tabbedPanel;
+	private MessagePanel messagePanel;
 	private SafeFileChooser fileChooser;
 	private PresDialog presDialog;
 	private Controller controller;
@@ -98,10 +101,12 @@ public class MainFrame extends JFrame {
 		String password = pres.get("password", "");
 
 		presDialog.setDefault(port, user, password);
+		
+		tabbedPanel.add("Person Database", tablePanel);
+		tabbedPanel.add("Messages", messagePanel);
 
 		add(toolBar, BorderLayout.PAGE_START);
-		add(tablePanel, BorderLayout.CENTER);
-		add(formPanel, BorderLayout.WEST);
+		add(splitPanel, BorderLayout.CENTER);
 
 		setWindowlistener();
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -128,7 +133,10 @@ public class MainFrame extends JFrame {
 		fileChooser = new SafeFileChooser();
 		presDialog = new PresDialog(this);
 		pres = Preferences.userRoot().node("db");
-
+		tabbedPanel = new JTabbedPane();
+		messagePanel = new MessagePanel();
+		splitPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, formPanel, tabbedPanel);
+		
 		fileChooser.setFileFilter(new PersonFileFilter());
 	}
 
@@ -202,6 +210,9 @@ public class MainFrame extends JFrame {
 		personFormCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem) e.getSource();
+				if (menuItem.isSelected()){
+					splitPanel.setDividerLocation((int) formPanel.getMinimumSize().getWidth());
+				}
 				formPanel.setVisible(menuItem.isSelected());
 			}
 		});

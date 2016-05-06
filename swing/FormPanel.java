@@ -29,6 +29,7 @@ public class FormPanel extends JPanel implements ActionListener{
 		dim.width = 250;
 		dim.height = 100;
 		setPreferredSize(dim);
+		setMinimumSize(dim);
 		
 		initComponents();
 		
