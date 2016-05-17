@@ -8,21 +8,27 @@ import javax.swing.tree.*;
 public class MessagePanel extends JPanel {
 	private JTree serverTree;
 	private ServerTreeCellRenderer treeCellRenderer;
+	private ServerTreeCellEditor treeCellEditor;
 	
 	public MessagePanel(){
 		
 		serverTree = new JTree(createTree());
 		treeCellRenderer = new ServerTreeCellRenderer();
+		treeCellEditor = new ServerTreeCellEditor();
 		
 		serverTree.setCellRenderer(treeCellRenderer);
+		serverTree.setCellEditor(treeCellEditor);
+		serverTree.setEditable(true);
 		
 		serverTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		
-		serverTree.addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent e) {
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) serverTree.getLastSelectedPathComponent();
-				Object nodeObject = node.getUserObject();
-				System.out.println(nodeObject);
+		treeCellEditor.addCellEditorListener(new CellEditorListener() {
+			public void editingStopped(ChangeEvent e) {
+				ServerInfo info = (ServerInfo) treeCellEditor.getCellEditorValue();
+				
+				System.out.println(info + ": " + info.getId() + ", " + info.isChecked());
+			}
+			public void editingCanceled(ChangeEvent e) {
 			}
 		});
 		
